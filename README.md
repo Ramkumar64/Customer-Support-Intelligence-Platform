@@ -1,20 +1,15 @@
-
-
-````markdown
 # Customer Operations AI Pipeline
 
-An AI-assisted customer operations pipeline for enterprise support teams.
+An AI-assisted customer operations platform for enterprise support teams.
 
-The project combines deterministic business logic, local knowledge-base
-retrieval, and Gemini-powered reasoning to support two core workflows:
+The project combines deterministic business logic, local knowledge-base retrieval, and Gemini-powered reasoning to support two core workflows:
 
 1. **Intelligent Ticket Triage**
 2. **TAM Account Health Analysis**
 
-It also includes an evaluation harness and production design documentation.
+It also includes an evaluation harness, automated tests, CI validation, and production design documentation.
 
-The project uses the synthetic datasets provided for the
-**US Delivery Internship Technical Task Round**.
+The project uses synthetic customer-support and account datasets to demonstrate the pipeline workflows.
 
 ---
 
@@ -23,39 +18,37 @@ The project uses the synthetic datasets provided for the
 Customer-support operations typically require two types of work:
 
 - understanding and routing incoming support tickets
-- identifying account-level risks and preparing useful information for
-  Technical Account Managers (TAMs)
+- identifying account-level risks and preparing useful information for Technical Account Managers (TAMs)
 
-This project automates both workflows while keeping important business
-calculations deterministic and auditable.
+This project automates both workflows while keeping important business calculations deterministic and auditable.
 
 ### Architecture
 
 ```text
                          Customer Operations AI Pipeline
-                                      │
-                 ┌────────────────────┴────────────────────┐
-                 │                                         │
-          Task 1: Ticket Triage                  Task 2: Account Health
-                 │                                         │
-          Ticket subject/body                    Account + ticket history
-                 │                                         │
-                 ▼                                         ▼
-        Gemini classification                    Deterministic metrics
-                 │                                         │
-                 ▼                                         ▼
-       Knowledge-base retrieval                  Risk-signal detection
-                 │                                         │
-                 ▼                                         ▼
-        Known-issue analysis                       Gemini summary
-                 │                                         │
-                 ▼                                         ▼
-       Responder-team routing                    TAM executive brief
-                 │
-                 ▼
-          First-response draft
-````
 
+                                  |
+                 +----------------+----------------+
+                 |                                 |
+          Task 1: Ticket Triage             Task 2: Account Health
+                 |                                 |
+          Ticket subject/body               Account + ticket history
+                 |                                 |
+                 v                                 v
+        Gemini classification             Deterministic metrics
+                 |                                 |
+                 v                                 v
+       Knowledge-base retrieval             Risk-signal detection
+                 |                                 |
+                 v                                 v
+        Known-issue analysis                 Gemini summary
+                 |                                 |
+                 v                                 v
+       Responder-team routing               TAM executive brief
+                 |
+                 v
+        First-response draft
+```
 ---
 
 ## Features
@@ -64,66 +57,63 @@ calculations deterministic and auditable.
 
 For each support ticket, the pipeline determines:
 
-* Product area
-* Category
-* Urgency
-* Reasoning
-* Relevant knowledge-base document
-* Known-issue match
-* Recommended responder team
-* Draft first response
+- Product area
+- Category
+- Urgency
+- Reasoning
+- Relevant knowledge-base document
+- Known-issue match
+- Recommended responder team
+- Draft first response
 
 Supported categories:
 
-* Bug
-* Feature Request
-* How-To
-* Performance
-* Billing
-* Integration
-* Onboarding
-* Data Loss
+- Bug
+- Feature Request
+- How-To
+- Performance
+- Billing
+- Integration
+- Onboarding
+- Data Loss
 
 Urgency levels:
 
-* **P1** — Critical
-* **P2** — High impact
-* **P3** — Normal / moderate impact
-* **P4** — Low priority
+- **P1** — Critical
+- **P2** — High impact
+- **P3** — Normal / moderate impact
+- **P4** — Low priority
 
 ### Account Health
 
-The account-health workflow combines account information with the
-customer's recent support history.
+The account-health workflow combines account information with the customer's recent support history.
 
 It calculates:
 
-* Ticket volume
-* Open tickets
-* P1 tickets
-* Average satisfaction
-* Seat utilisation
-* Days to renewal
-* Usage trend
-* NPS
-* Account health
-* Risk signals
-* Escalation notes
+- Ticket volume
+- Open tickets
+- P1 tickets
+- Average satisfaction
+- Seat utilisation
+- Days to renewal
+- Usage trend
+- NPS
+- Account health
+- Risk signals
+- Escalation notes
 
-It then uses Gemini to turn the grounded metrics into a concise
-TAM-oriented executive summary.
+It then uses Gemini to turn the grounded metrics into a concise TAM-oriented executive summary.
 
 ### Knowledge-Base Retrieval
 
-Knowledge-base retrieval is performed locally rather than asking the LLM
-to search the entire corpus.
+Knowledge-base retrieval is performed locally rather than asking the LLM to search the entire corpus.
 
 The retrieval pipeline uses:
 
-* TF-IDF vectorisation
-* Cosine similarity
-* Product-aware matching
-* Ranked document selection
+- TF-IDF vectorisation
+- Cosine similarity
+- Product-aware matching
+- Ranked document selection
 
 This reduces unnecessary LLM usage and keeps retrieval deterministic.
 
@@ -131,12 +121,12 @@ This reduces unnecessary LLM usage and keeps retrieval deterministic.
 
 The repository contains automated evaluation cases covering:
 
-* Normal ticket triage
-* Account-health calculations
-* Ambiguous tickets
-* Conflicting account signals
-* Account/ticket discrepancies
-* Executive account-health output
+- Normal ticket triage
+- Account-health calculations
+- Ambiguous tickets
+- Conflicting account signals
+- Account/ticket discrepancies
+- Executive account-health output
 
 ---
 
@@ -155,6 +145,7 @@ customer-ops-ai-pipeline/
 │   ├── billing/
 │   └── onboarding/
 │
+├── app.py
 ├── account_health.py
 ├── data_loader.py
 ├── evaluation.py
@@ -176,20 +167,21 @@ customer-ops-ai-pipeline/
 
 ### Module Responsibilities
 
-| File                     | Responsibility                                                      |
-| ------------------------ | ------------------------------------------------------------------- |
-| `main.py`                | CLI entry point                                                     |
-| `triage.py`              | Ticket classification, KB matching, routing and response generation |
-| `account_health.py`      | Account context, deterministic metrics and health summary           |
-| `data_loader.py`         | Loads tickets and account data                                      |
-| `kb_loader.py`           | Loads knowledge-base documents                                      |
-| `kb_retriever.py`        | TF-IDF and cosine-similarity retrieval                              |
-| `evaluation.py`          | Automated evaluation harness                                        |
-| `test_triage_rules.py`   | Responder-team rule tests                                           |
-| `test_account_health.py` | Account-health metric tests                                         |
-| `DATA_SCHEMA.md`         | Dataset schema documentation                                        |
-| `DESIGN_NOTE.md`         | Production architecture and failure-mode analysis                   |
-| `eval_report.md`         | Evaluation results                                                  |
+| File | Responsibility |
+|---|---|
+| `app.py` | Streamlit web application |
+| `main.py` | CLI entry point |
+| `triage.py` | Ticket classification, KB matching, routing and response generation |
+| `account_health.py` | Account context, deterministic metrics and health summary |
+| `data_loader.py` | Loads tickets and account data |
+| `kb_loader.py` | Loads knowledge-base documents |
+| `kb_retriever.py` | TF-IDF and cosine-similarity retrieval |
+| `evaluation.py` | Automated evaluation harness |
+| `test_triage_rules.py` | Responder-team rule tests |
+| `test_account_health.py` | Account-health metric tests |
+| `DATA_SCHEMA.md` | Dataset schema documentation |
+| `DESIGN_NOTE.md` | Production architecture and failure-mode analysis |
+| `eval_report.md` | Evaluation results |
 
 ---
 
@@ -197,9 +189,9 @@ customer-ops-ai-pipeline/
 
 ## Requirements
 
-* Python 3.10+
-* Gemini API key
-* Internet connection for Gemini API calls
+- Python 3.10+
+- Gemini API key
+- Internet connection for Gemini API calls
 
 ## 1. Clone or open the project
 
@@ -241,11 +233,32 @@ The actual `.env` file is excluded from Git through `.gitignore`.
 
 ---
 
-# Running the Application
+# Application
 
-The project uses `main.py` as its command-line entry point.
+The platform can be used through an interactive Streamlit web application or directly through the command line.
 
-## View available commands
+## Interactive Web Application
+
+Launch the Streamlit interface:
+
+```powershell
+streamlit run app.py
+```
+
+The application provides two workflows:
+
+- **Ticket Triage** — classify support tickets, determine urgency, retrieve relevant knowledge-base guidance, recommend a responder team, and generate a grounded first response.
+- **Account Health** — calculate account metrics, identify risk signals and data-quality issues, and generate a TAM-oriented executive brief.
+
+The application runs locally at:
+
+```text
+http://localhost:8501
+```
+
+## Command-Line Interface
+
+View available commands:
 
 ```powershell
 python main.py --help
@@ -293,11 +306,9 @@ Responder-team recommendation
 First-response generation
 ```
 
-The classification is constrained to the supported category and urgency
-values.
+The classification is constrained to the supported category and urgency values.
 
-The model is also instructed to base urgency on evidence contained in the
-ticket rather than simply trusting words such as "urgent" or "critical".
+The model is also instructed to base urgency on evidence contained in the ticket rather than simply trusting words such as "urgent" or "critical".
 
 ---
 
@@ -332,11 +343,9 @@ Gemini
 Executive TAM summary
 ```
 
-The account-health calculations are performed locally in Python so that
-important business metrics remain reproducible.
+The account-health calculations are performed locally in Python so that important business metrics remain reproducible.
 
-The LLM is used for summarisation rather than for calculating the
-underlying metrics.
+The LLM is used for summarisation rather than for calculating the underlying metrics.
 
 ---
 
@@ -362,8 +371,7 @@ The retrieval process is:
 6. Rank the documents.
 7. Select the most relevant document.
 
-This provides a lightweight local retrieval layer without requiring an
-external vector database.
+This provides a lightweight local retrieval layer without requiring an external vector database.
 
 ---
 
@@ -395,17 +403,15 @@ The complete schema is documented in:
 DATA_SCHEMA.md
 ```
 
-The implementation also handles the intentionally imperfect dataset,
-including ticket/account mismatches and ambiguous tickets.
+The implementation also handles the intentionally imperfect dataset, including ticket/account mismatches and ambiguous tickets.
 
 ---
 
 # Testing
 
-The repository contains both deterministic unit tests and an
-LLM-dependent evaluation harness.
+The repository contains both deterministic unit tests and an LLM-dependent evaluation harness.
 
-## Triage rule tests
+## Triage Rule Tests
 
 ```powershell
 python test_triage_rules.py
@@ -417,7 +423,7 @@ Expected:
 All responder-team tests passed.
 ```
 
-## Account-health tests
+## Account-Health Tests
 
 ```powershell
 python test_account_health.py
@@ -429,15 +435,15 @@ Expected:
 All account-health metric tests passed.
 ```
 
-## Python compilation
+## Python Compilation
 
 ```powershell
-python -m py_compile data_loader.py kb_loader.py kb_retriever.py triage.py account_health.py evaluation.py main.py
+python -m py_compile data_loader.py kb_loader.py kb_retriever.py triage.py account_health.py evaluation.py main.py app.py
 ```
 
 No output indicates successful compilation.
 
-## Dependency validation
+## Dependency Validation
 
 ```powershell
 python -m pip check
@@ -451,7 +457,7 @@ No broken requirements found.
 
 ---
 
-# Evaluation
+# Validation & Evaluation
 
 Run the complete evaluation harness with:
 
@@ -459,15 +465,24 @@ Run the complete evaluation harness with:
 python evaluation.py
 ```
 
+The evaluation harness contains **15 checks**:
+
+- 5 normal triage cases
+- 5 account-health metric cases
+- 2 adversarial triage cases
+- 2 adversarial account-health cases
+- 1 Task 2 executive-brief validation
+
 The evaluation covers:
 
-* 5 normal triage cases
-* 5 account-health metric cases
-* 2 adversarial triage cases
-* 2 adversarial account-health cases
-* Task 2 executive-brief validation
+- Normal ticket triage
+- Account-health calculations
+- Ambiguous tickets
+- Conflicting account signals
+- Account/ticket discrepancies
+- Executive account-health output
 
-A successful development run achieved:
+A complete development run achieved:
 
 ```text
 Overall score: 1.00
@@ -476,59 +491,57 @@ Overall pass rate: 100.00%
 Evaluation errors: 0
 ```
 
-Evaluation results are documented in:
+The 14/14 result represents the complete set of cases executed in that run. The executive-brief validation was subsequently added to the evaluation harness and passed successfully when Gemini API quota was available.
+
+Detailed evaluation results are documented in:
 
 ```text
 eval_report.md
 ```
 
-### API quota
+## API Quota
 
 The evaluation requires Gemini API requests.
 
-During development, some runs encountered Gemini Free Tier quota
-limitations (`429 RESOURCE_EXHAUSTED`) and temporary service
-availability errors (`503 UNAVAILABLE`).
+During development, some runs encountered Gemini Free Tier quota limitations (`429 RESOURCE_EXHAUSTED`) and temporary service availability errors (`503 UNAVAILABLE`).
 
-These errors are external API limitations and are reported separately
-by the evaluation harness.
+These errors are external API limitations and are reported separately by the evaluation harness.
 
 ---
 
 # Design Decisions
 
-## Deterministic business logic
+## Deterministic Business Logic
 
-Business-critical account metrics are calculated locally rather than
-delegated to the LLM.
+Business-critical account metrics are calculated locally rather than delegated to the LLM.
 
 This makes values such as:
 
-* ticket counts
-* seat utilisation
-* renewal timing
-* satisfaction averages
+- ticket counts
+- seat utilisation
+- renewal timing
+- satisfaction averages
 
 reproducible and testable.
 
-## LLM usage
+## LLM Usage
 
 Gemini is used where language reasoning provides the most value:
 
-* ticket classification
-* knowledge-grounded reasoning
-* first-response generation
-* executive account-health summarisation
+- ticket classification
+- knowledge-grounded reasoning
+- first-response generation
+- executive account-health summarisation
 
 ## Grounding
 
 Prompts explicitly instruct the model to:
 
-* use only supplied data
-* avoid inventing facts
-* acknowledge missing information
-* distinguish calculated values from source values
-* surface contradictory data
+- use only supplied data
+- avoid inventing facts
+- acknowledge missing information
+- distinguish calculated values from source values
+- surface contradictory data
 
 ---
 
@@ -571,16 +584,16 @@ DESIGN_NOTE.md
 
 The design note covers:
 
-* LLM/API failures
-* Rate limits and quota exhaustion
-* Invalid model responses
-* Classification errors
-* Missing or contradictory customer data
-* Latency versus quality
-* PII and data sensitivity
-* Scaling to 10× volume
-* Retry and backoff strategies
-* Human review for high-impact classifications
+- LLM/API failures
+- Rate limits and quota exhaustion
+- Invalid model responses
+- Classification errors
+- Missing or contradictory customer data
+- Latency versus quality
+- PII and data sensitivity
+- Scaling to 10× volume
+- Retry and backoff strategies
+- Human review for high-impact classifications
 
 ---
 
@@ -589,7 +602,7 @@ The design note covers:
 Before submission, run:
 
 ```powershell
-python -m py_compile data_loader.py kb_loader.py kb_retriever.py triage.py account_health.py evaluation.py main.py
+python -m py_compile data_loader.py kb_loader.py kb_retriever.py triage.py account_health.py evaluation.py main.py app.py
 ```
 
 ```powershell
@@ -608,6 +621,12 @@ python -m pip check
 python main.py --help
 ```
 
+To launch the interactive application:
+
+```powershell
+streamlit run app.py
+```
+
 Finally, when Gemini API quota is available:
 
 ```powershell
@@ -618,13 +637,11 @@ python evaluation.py
 
 # Limitations
 
-* Ticket triage depends on Gemini API availability.
-* Free-tier Gemini quotas can limit evaluation runs.
-* The current knowledge-base retriever is a lightweight TF-IDF system
-  rather than a production vector database.
-* The supplied datasets are synthetic and therefore do not represent
-  production customer data.
-* The CLI is currently the primary interface.
+- Ticket triage depends on Gemini API availability.
+- Free-tier Gemini quotas can limit evaluation runs.
+- The current knowledge-base retriever is a lightweight TF-IDF system rather than a production vector database.
+- The supplied datasets are synthetic and therefore do not represent production customer data.
+- The Streamlit interface provides the primary interactive experience, while the CLI remains available for direct workflow execution.
 
 ---
 
@@ -632,9 +649,6 @@ python evaluation.py
 
 Additional project documentation:
 
-* [`DATA_SCHEMA.md`](DATA_SCHEMA.md) — dataset schema
-* [`DESIGN_NOTE.md`](DESIGN_NOTE.md) — production design considerations
-* [`eval_report.md`](eval_report.md) — evaluation results
-
----
-
+- [`DATA_SCHEMA.md`](DATA_SCHEMA.md) — dataset schema
+- [`DESIGN_NOTE.md`](DESIGN_NOTE.md) — production design considerations
+- [`eval_report.md`](eval_report.md) — evaluation results
