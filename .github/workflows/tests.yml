@@ -36,6 +36,8 @@ jobs:
             test_triage_rules.py
 
       - name: Run deterministic tests
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
           python test_triage_rules.py
-          python test_account_health.py 
+          python test_account_health.py
