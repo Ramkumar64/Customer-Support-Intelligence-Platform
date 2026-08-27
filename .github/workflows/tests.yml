@@ -1,0 +1,41 @@
+name: Tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Compile Python files
+        run: |
+          python -m py_compile \
+            data_loader.py \
+            kb_loader.py \
+            kb_retriever.py \
+            triage.py \
+            account_health.py \
+            evaluation.py \
+            main.py \
+            test_account_health.py \
+            test_triage_rules.py
+
+      - name: Run deterministic tests
+        run: |
+          python test_triage_rules.py
+          python test_account_health.py 
