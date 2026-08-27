@@ -1,6 +1,7 @@
 
+
 ````markdown
-# Customer Support AI Pipeline
+# Customer Operations AI Pipeline
 
 An AI-assisted customer operations pipeline for enterprise support teams.
 
