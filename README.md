@@ -1,15 +1,6 @@
-You're right. The README I gave you became **an evaluation/report document**, not a professional project README.
-
-For an internship submission, the README should read like a **developer-facing project walkthrough**:
-
-**What is this → architecture → how it works → setup → how to run → examples → testing → project structure → design decisions → limitations.**
-
-It should not spend half the README talking about scores and checkboxes.
-
-I would replace the current README with a much cleaner professional version. It should look roughly like this:
 
 ````markdown
-# Customer Operations AI Pipeline
+# Customer Support AI Pipeline
 
 An AI-assisted customer operations pipeline for enterprise support teams.
 
