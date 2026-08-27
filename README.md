@@ -1,4 +1,4 @@
-# Customer Operations AI Pipeline
+# Customer Support Intelligence Pipeline
 
 An AI-assisted customer operations platform for enterprise support teams.
 
